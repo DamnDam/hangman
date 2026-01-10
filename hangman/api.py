@@ -1,9 +1,9 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
 
-from models import GameNotFoundError, GameIsAlreadyOverError, WordAlreadyExists, WordNotFoundError
-from views import GamePublic, GameCreation, Letter, Word
-from utils import init_game_use_case, guess_letter_use_case, add_word_to_repo, delete_word_from_repo
+from models import GameNotFoundError, GameIsAlreadyOverError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
+from views import GamePublic, PlayerPublic, GameCreation, Letter, Word
+from utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player
 
 api = FastAPI()
 
@@ -11,8 +11,9 @@ api = FastAPI()
 def create_game(
         GameCreation: GameCreation,
 ) -> GamePublic:
-    return GamePublic.from_game(init_game_use_case(
+    return GamePublic.from_game(init_game(
         max_errors=GameCreation.max_errors,
+        player_name=GameCreation.player_name,
     ))
 
 
@@ -22,7 +23,7 @@ def add_selected_letter(
         letter: Letter,
 ) -> GamePublic:
     try:
-        game = guess_letter_use_case(game_id=game_id, letter=letter.letter)
+        game = guess_letter(game_id=game_id, letter=letter.letter)
         return GamePublic.from_game(game)
     except GameNotFoundError:
         raise HTTPException(status_code=404, detail="Game not found")
@@ -46,6 +47,18 @@ def delete_word(
         delete_word_from_repo(word=word)
     except WordNotFoundError:
         raise HTTPException(status_code=404, detail="Word not found")
+
+@api.get('/players/{player_name}')
+def get_player_endpoint(
+    player_name: str,
+):
+    try:
+        player = get_player(player_name=player_name)
+        return PlayerPublic.from_player(player)
+
+    except PlayerNotFoundError:
+        raise HTTPException(status_code=404, detail="Player not found")
+
 
 if __name__ == "__main__":
     uvicorn.run(api, host="0.0.0.0", port=8000)

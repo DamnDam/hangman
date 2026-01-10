@@ -1,6 +1,7 @@
 import requests
 
-from views import GamePublic
+from models import PlayerNotFoundError
+from views import GamePublic, PlayerPublic
 
 SERVER_URL = "http://localhost:8000"
 
@@ -13,12 +14,16 @@ def request(method: str, endpoint: str, data: dict = None) -> dict:
     return response.json()
 
 def init_game(
+        player_name: str,
         max_errors: int,
 ) -> GamePublic:
     return GamePublic(**request(
         method="POST",
         endpoint="/games",
-        data={"max_errors": max_errors},
+        data={
+            "player_name": player_name,
+            "max_errors": max_errors,
+        },
     ))
 
 def guess_letter(
@@ -47,3 +52,16 @@ def delete_word_from_repo(
         method="DELETE",
         endpoint=f"/words/{word}",
     )
+
+def get_player(
+        player_name: str,
+) -> PlayerPublic:
+    try:
+        return PlayerPublic(**request(
+            method="GET",
+            endpoint=f"/players/{player_name}",
+        ))
+    except requests.HTTPError as e:
+        if e.response.status_code == 404:
+            raise PlayerNotFoundError from e
+        raise

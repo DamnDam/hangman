@@ -5,13 +5,6 @@ from pydantic import BaseModel
 def str_uuid() -> str:
     return str(uuid4())
 
-
-class GameStatus(str, Enum):
-    IN_PROGRESS = "in_progress"
-    WON = "won"
-    LOST = "lost"
-
-
 class GameNotFoundError(Exception):
     ...
 
@@ -24,16 +17,47 @@ class WordNotFoundError(Exception):
 class WordAlreadyExists(Exception):
     ...
 
+class PlayerNotFoundError(Exception):
+    ...
+
+class Player:
+    def __init__(
+            self,
+            name: str,
+            games: list["Game"] | None = None,
+    ):
+        self._name = name
+        self._games = games or []
+
+    @property
+    def id(self) -> str:
+        return self._id
+
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @property
+    def games(self) -> list["Game"]:
+        return self._games
+
+class GameStatus(str, Enum):
+    IN_PROGRESS = "in_progress"
+    WON = "won"
+    LOST = "lost"
+
 class Game:
     def __init__(
             self,
             max_errors: int,
             word_to_guess: str,
+            player: "Player",
             id: str | None = None,
             errors: int = 0,
             selected_letters: list[str] | None = None,
     ):
         self._id = id or str_uuid()
+        self._player = player
         self._max_errors = max_errors
         self._word_to_guess = word_to_guess
         self._errors = errors
@@ -46,6 +70,10 @@ class Game:
     @property
     def word_to_guess(self) -> str:
         return self._word_to_guess
+
+    @property
+    def player(self) -> "Player":
+        return self._player
 
     @property
     def errors(self) -> int:
@@ -61,7 +89,7 @@ class Game:
 
     @property
     def word_so_far(self) -> str:
-        return "".join([l if l in self.selected_letters else "_" for l in self.word_to_guess])
+        return "".join([l if l in self.selected_letters else "-" for l in self.word_to_guess])
 
     @property
     def errors_left(self) -> int:

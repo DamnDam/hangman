@@ -1,8 +1,9 @@
 import random
 import json
 
-from models import Game, GameNotFoundError, WordAlreadyExists, WordNotFoundError
-from views import GameModel
+from models import Game, Player
+from models import GameNotFoundError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
+from views import GameModel, PlayerModel
 
 class GamesRepo:
     _games: dict[str, Game]
@@ -71,3 +72,27 @@ class WordsRepo:
             raise WordNotFoundError()
         self._words.remove(word)
         self.persist()
+
+
+class PlayerRepo:
+    _games_repo: GamesRepo
+    _players: dict[str, Player]
+
+    def __init__(self, GamesRepo: GamesRepo):
+        self._games_repo = GamesRepo
+
+    def reload(self):
+        raise NotImplementedError()
+    
+    def persist(self):
+        raise NotImplementedError()
+
+    def get(self, player_name: str) -> Player:
+        # Get all games for this player
+        games = list(filter(lambda g: g.player.name == player_name, self._games_repo._games.values()))
+        if not games:
+            raise PlayerNotFoundError()
+        return Player(name=player_name, games=games)
+    
+    def save(self, player: Player):
+        raise NotImplementedError()

@@ -1,5 +1,5 @@
-from models import Game
-from repo import GamesRepo, WordsRepo
+from models import Game, Player
+from repo import GamesRepo, WordsRepo, PlayerRepo
 
 ################
 # dependencies #
@@ -7,6 +7,7 @@ from repo import GamesRepo, WordsRepo
 class Dependencies:
     games_repo = GamesRepo()
     words_repo = WordsRepo()
+    player_repo = PlayerRepo(GamesRepo=games_repo)
 
 
 dependencies = Dependencies()
@@ -15,19 +16,21 @@ dependencies = Dependencies()
 ##########################
 # use cases "controller" #
 ##########################
-def init_game_use_case(
+def init_game(
         max_errors: int,
+        player_name: str,
         games_repo: GamesRepo = dependencies.games_repo,
+        words_repo: WordsRepo = dependencies.words_repo,
 ) -> Game:
     game = Game(
         max_errors=max_errors,
-        word_to_guess=get_random_word(),
+        word_to_guess=words_repo.get_random_word(),
+        player=Player(name=player_name),
     )
     games_repo.save(game=game)
     return game
 
-
-def guess_letter_use_case(
+def guess_letter(
         game_id: str,
         letter: str,
         games_repo: GamesRepo = dependencies.games_repo,
@@ -36,11 +39,6 @@ def guess_letter_use_case(
     game.add_selected_letter(letter=letter)
     games_repo.save(game=game)
     return game
-
-def get_random_word(
-        words_repo: WordsRepo = dependencies.words_repo,
-) -> str:
-    return words_repo.get_random_word()
 
 def add_word_to_repo(
         word: str,
@@ -53,3 +51,9 @@ def delete_word_from_repo(
         words_repo: WordsRepo = dependencies.words_repo,
 ):
     words_repo.delete_word(word=word)
+
+def get_player(
+        player_name: str,
+        player_repo: PlayerRepo = dependencies.player_repo,
+) -> Player:
+    return player_repo.get(player_name=player_name)
