@@ -12,7 +12,13 @@ class GameStatus(str, Enum):
     LOST = "lost"
 
 
+class GameNotFoundError(Exception):
+    ...
+
 class GameIsAlreadyOverError(Exception):
+    ...
+
+class WordNotFoundError(Exception):
     ...
 
 class WordAlreadyExists(Exception):

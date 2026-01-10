@@ -47,3 +47,9 @@ def add_word_to_repo(
         words_repo: WordsRepo = dependencies.words_repo,
 ):
     words_repo.add_word(word=word)
+
+def delete_word_from_repo(
+        word: str,
+        words_repo: WordsRepo = dependencies.words_repo,
+):
+    words_repo.delete_word(word=word)

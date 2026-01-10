@@ -42,5 +42,10 @@ docker compose up -d hangman-api
 
 Ajouter un mot
 ```bash
-python hangman/cli.py add-word myword
+python hangman/cli.py words -a myword
+```
+
+Supprimer un mot
+```bash
+python hangman/cli.py words -d myword
 ```

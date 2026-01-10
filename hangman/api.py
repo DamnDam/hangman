@@ -1,9 +1,9 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
 
-from models import GameIsAlreadyOverError, WordAlreadyExists
+from models import GameNotFoundError, GameIsAlreadyOverError, WordAlreadyExists, WordNotFoundError
 from views import GamePublic, GameCreation, Letter, Word
-from utils import init_game_use_case, guess_letter_use_case, add_word_to_repo
+from utils import init_game_use_case, guess_letter_use_case, add_word_to_repo, delete_word_from_repo
 
 api = FastAPI()
 
@@ -24,6 +24,8 @@ def add_selected_letter(
     try:
         game = guess_letter_use_case(game_id=game_id, letter=letter.letter)
         return GamePublic.from_game(game)
+    except GameNotFoundError:
+        raise HTTPException(status_code=404, detail="Game not found")
     except GameIsAlreadyOverError:
         raise HTTPException(status_code=400, detail="Game is already over")
 
@@ -36,6 +38,14 @@ def add_word(
     except WordAlreadyExists:
         raise HTTPException(status_code=409, detail="Word already exists")
 
+@api.delete('/words/{word}', status_code=204)
+def delete_word(
+    word: str,
+) -> None:
+    try:
+        delete_word_from_repo(word=word)
+    except WordNotFoundError:
+        raise HTTPException(status_code=404, detail="Word not found")
 
 if __name__ == "__main__":
     uvicorn.run(api, host="0.0.0.0", port=8000)

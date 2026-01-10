@@ -1,6 +1,6 @@
 import typer
 
-from cli_utils import init_game, guess_letter, add_word_to_repo
+from cli_utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo
 from models import GameStatus
 
 app = typer.Typer()
@@ -41,14 +41,26 @@ def hangman(
             print("you didn't enter a letter")
 
 @app.command()
-def add_word(
-        word: str = typer.Argument(..., help="The word to add to the repository"),
+def words(
+    word: str = typer.Argument(..., help="The word to add to the repository"),
+    add: bool = typer.Option(False, '--add', '-a', help="Add a word to the repository", is_flag=True),
+    delete: bool = typer.Option(False, '--delete', '-d', help="Delete a word from the repository", is_flag=True),
 ):
-    try:
-        add_word_to_repo(word=word)
-        print(f'Word "{word}" added to the repository')
-    except Exception as e:
-        print(f"Error: {e}")
+    if add:
+        try:
+            add_word_to_repo(word=word)
+            print(f'Word "{word}" added to the repository')
+        except Exception as e:
+            print(f"Error: {e}")
+    elif delete:
+        try:
+            delete_word_from_repo(word=word)
+            print(f'Word "{word}" deleted from the repository')
+        except Exception as e:
+            print(f"Error: {e}")
+    else:
+        print("You must specify either --add or --delete")
+
 
 if __name__ == "__main__":
     app()

@@ -1,7 +1,7 @@
 import random
 import json
 
-from models import Game, WordAlreadyExists
+from models import Game, GameNotFoundError, WordAlreadyExists, WordNotFoundError
 from views import GameModel
 
 class GamesRepo:
@@ -37,7 +37,7 @@ class GamesRepo:
 
     def get(self, game_id: str):
         if game_id not in self._games.keys():
-            raise ValueError(f"Game with id {game_id} not found")
+            raise GameNotFoundError()
         return self._games[game_id]
 
 
@@ -64,4 +64,10 @@ class WordsRepo:
         if word in self._words:
             raise WordAlreadyExists()
         self._words.append(word)
+        self.persist()
+    
+    def delete_word(self, word: str):
+        if word not in self._words:
+            raise WordNotFoundError()
+        self._words.remove(word)
         self.persist()

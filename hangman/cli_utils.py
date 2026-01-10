@@ -8,6 +8,8 @@ def request(method: str, endpoint: str, data: dict = None) -> dict:
     url = SERVER_URL + endpoint
     response = requests.request(method=method, url=url, json=data)
     response.raise_for_status()
+    if response.status_code in (204, 201 ):
+        return {}
     return response.json()
 
 def init_game(
@@ -36,4 +38,12 @@ def add_word_to_repo(
         method="POST",
         endpoint="/words",
         data={"word": word},
+    )
+
+def delete_word_from_repo(
+        word: str,
+) -> None:
+    request(
+        method="DELETE",
+        endpoint=f"/words/{word}",
     )
