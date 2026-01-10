@@ -3,15 +3,11 @@ services:
   hangman-api:
     image: hangman
     build: .
-    command:
-      - python
-      - online-hangman/api.py
+    command: ["uv", "run", "online-hangman/api.py"]
     ports:
       - "8000:8000"
 
   hangman-cli:
     image: hangman
     build: .
-    command:
-      - python
-      - online-hangman/cli.py
+    command: ["uv", "run", "online-hangman/cli.py"]

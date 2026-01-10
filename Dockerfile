@@ -1,14 +1,15 @@
-FROM python:3.13
+FROM python:3.13-slim
 
 RUN mkdir /app
 WORKDIR /app
 
-COPY requirements.txt .
+COPY pyproject.toml uv.lock .
 
-RUN pip install -r requirements.txt
+RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
+    uv sync
 
 ADD ./hangman /app/hangman
 
 COPY words.txt .
 
-CMD ["python", "hangman/cli.py"]
+CMD ["uv", "run", "online-hangman/cli.py"]
