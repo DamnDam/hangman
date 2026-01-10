@@ -10,4 +10,4 @@ services:
   hangman-cli:
     image: hangman
     build: .
-    command: ["uv", "run", "online-hangman/cli.py"]
+    command: ["uv", "run", "online-hangman/cli.py", "hangman"]

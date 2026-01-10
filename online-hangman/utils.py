@@ -1,25 +1,12 @@
-import random
-
 from models import Game
-from repo import GamesRepo
-from views import GameModel
-
-#################
-# words adapter #
-#################
-def get_random_word():
-    words = []
-    with open("words.txt", "r") as words_file:
-        for word in words_file:
-            words.append(word[:-1])
-    return words[random.randint(0, len(words))]
-
+from repo import GamesRepo, WordsRepo
 
 ################
 # dependencies #
 ################
 class Dependencies:
     games_repo = GamesRepo()
+    words_repo = WordsRepo()
 
 
 dependencies = Dependencies()
@@ -49,3 +36,14 @@ def guess_letter_use_case(
     game.add_selected_letter(letter=letter)
     games_repo.save(game=game)
     return game
+
+def get_random_word(
+        words_repo: WordsRepo = dependencies.words_repo,
+) -> str:
+    return words_repo.get_random_word()
+
+def add_word_to_repo(
+        word: str,
+        words_repo: WordsRepo = dependencies.words_repo,
+):
+    words_repo.add_word(word=word)

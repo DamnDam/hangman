@@ -30,3 +30,5 @@ class GameCreation(BaseModel):
 class Letter(BaseModel):
     letter: str
 
+class Word(BaseModel):
+    word: str

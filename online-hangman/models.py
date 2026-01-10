@@ -14,6 +14,9 @@ class GameStatus(str, Enum):
 class GameIsAlreadyOverError(Exception):
     ...
 
+class WordAlreadyExists(Exception):
+    ...
+
 
 class Game:
     def __init__(

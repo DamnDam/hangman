@@ -22,7 +22,7 @@ Le Non-fonctionnel est plus prioritaire que le Fonctionnel. La liste des TODO da
 
 Démarrer la CLI en python local
 ```bash
-python online-hangman/cli.py
+python online-hangman/cli.py hangman
 ```
 
 Démarrer l'API en python local
@@ -38,4 +38,9 @@ docker compose run -it hangman-cli
 Démarrer l'API en docker
 ```bash
 docker compose up -d hangman-api 
+```
+
+Ajouter un mot
+```bash
+python online-hangman/cli.py add-word myword
 ```

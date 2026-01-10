@@ -1,6 +1,6 @@
 import typer
 
-from cli_utils import init_game, guess_letter
+from cli_utils import init_game, guess_letter, add_word_to_repo
 from models import GameStatus
 
 app = typer.Typer()
@@ -29,7 +29,7 @@ def hangman(
             game = guess_letter(game_id=game.id, letter=letter)
 
             if game.game_status == GameStatus.WON:
-                print("You won \o/")
+                print("You won \\o/")
                 print("The word was " + game.word_to_guess)
                 break
             elif game.game_status == GameStatus.LOST:
@@ -39,6 +39,15 @@ def hangman(
         else:
             print("you didn't enter a letter")
 
+@app.command()
+def add_word(
+        word: str = typer.Argument(..., help="The word to add to the repository"),
+):
+    try:
+        add_word_to_repo(word=word)
+        print(f'Word "{word}" added to the repository')
+    except Exception as e:
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     app()

@@ -28,3 +28,12 @@ def guess_letter(
         endpoint=f"/games/{game_id}/selected_letters",
         data={"letter": letter},
     ))
+
+def add_word_to_repo(
+        word: str,
+) -> None:
+    request(
+        method="POST",
+        endpoint="/words",
+        data={"word": word},
+    )
