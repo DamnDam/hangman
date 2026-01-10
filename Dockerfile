@@ -5,11 +5,12 @@ WORKDIR /app
 
 COPY pyproject.toml uv.lock .
 
+ENV UV_PROJECT_ENVIRONMENT=/usr/local
 RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
-    uv sync
+    uv sync --locked --no-install-project --no-editable
 
 ADD ./hangman /app/hangman
 
 COPY words.txt .
 
-CMD ["uv", "run", "online-hangman/cli.py"]
+CMD ["python", "hangman/cli.py"]
