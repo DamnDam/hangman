@@ -49,19 +49,3 @@ def guess_letter_use_case(
     game.add_selected_letter(letter=letter)
     games_repo.save(game=game)
     return game
-
-
-##################
-# python adapter #
-##################
-def init_game(
-        max_errors: int,
-) -> GameModel:
-    return GameModel.from_game(init_game_use_case(max_errors=max_errors))
-
-
-def guess_letter(
-        game_id: str,
-        letter: str,
-) -> GameModel:
-    return GameModel.from_game(guess_letter_use_case(game_id=game_id, letter=letter))

@@ -1,10 +1,9 @@
 import typer
 
-from utils import init_game, guess_letter
+from cli_utils import init_game, guess_letter
 from models import GameStatus
 
 app = typer.Typer()
-
 
 @app.command()
 def hangman(
