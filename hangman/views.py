@@ -33,6 +33,25 @@ class GameModel(BaseModel):
             selected_letters=self.selected_letters,
         )
 
+class GamePublic(BaseModel):
+    id: str
+    max_errors: int
+    word_so_far: str
+    word_to_guess: str|None
+    errors_left: int
+    game_status: GameStatus
+
+    @staticmethod
+    def from_game(game: Game) -> 'GamePublic':
+        return GamePublic(
+            id=game.id,
+            max_errors=game.max_errors,
+            word_so_far=game.word_so_far,
+            word_to_guess=game.word_to_guess if game.game_status != GameStatus.IN_PROGRESS else None,
+            errors_left=game.errors_left,
+            game_status=game.game_status,
+        )
+
 class GameCreation(BaseModel):
     max_errors: int = 5
 

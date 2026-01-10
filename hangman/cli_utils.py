@@ -1,6 +1,6 @@
 import requests
 
-from views import GameModel
+from views import GamePublic
 
 SERVER_URL = "http://localhost:8000"
 
@@ -12,8 +12,8 @@ def request(method: str, endpoint: str, data: dict = None) -> dict:
 
 def init_game(
         max_errors: int,
-) -> GameModel:
-    return GameModel(**request(
+) -> GamePublic:
+    return GamePublic(**request(
         method="POST",
         endpoint="/games",
         data={"max_errors": max_errors},
@@ -22,8 +22,8 @@ def init_game(
 def guess_letter(
         game_id: str,
         letter: str,
-) -> GameModel:
-    return GameModel(**request(
+) -> GamePublic:
+    return GamePublic(**request(
         method="POST",
         endpoint=f"/games/{game_id}/selected_letters",
         data={"letter": letter},

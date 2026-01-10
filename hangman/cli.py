@@ -18,7 +18,8 @@ def hangman(
     game = init_game(max_errors=max_errors)
 
     if cheat_mode:
-        print('The word to guess is "' + game.word_to_guess + '" you cheater')
+        print(f'The word to guess is "{game.word_to_guess}" you cheater')
+        print("Wait it does not work anymore...")
 
     while True:
         print("Your word so far is: " + game.word_so_far)
