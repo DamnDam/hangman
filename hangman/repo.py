@@ -3,7 +3,7 @@ import json
 
 from models import Game, Player
 from models import GameNotFoundError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
-from views import GameModel, PlayerModel
+from views import GameModel, PlayerStats
 
 class GamesRepo:
     _game_models: dict[str, Game]
@@ -74,23 +74,81 @@ class WordsRepo:
 
 class PlayerRepo:
     _games_repo: GamesRepo
-    _players: dict[str, Player]
+    _players_stats: dict[str, PlayerStats]
+    _filename: str = "data/players.json"
 
     def __init__(self, GamesRepo: GamesRepo):
         self._games_repo = GamesRepo
+        try:
+            self.reload()
+        except FileNotFoundError:
+            self._players_stats = {}
+            self.persist()
 
     def reload(self):
-        raise NotImplementedError()
+        self._players_stats = {}
+        with open(self._filename, "r") as players_file:
+            players_data = json.load(players_file)
+            for player_dict in players_data:
+                self._players_stats[player_dict["name"]] = PlayerStats(**player_dict)
+
     
     def persist(self):
-        raise NotImplementedError()
+        with open(self._filename, "w") as players_file:
+            players_data = [
+                player_stats.model_dump()
+                for player_stats in self._players_stats.values()
+            ]
+            json.dump(players_data, players_file)
 
     def get(self, player_name: str) -> Player:
         # Get all games for this player
-        games = list(filter(lambda g: g.player.name == player_name, self._games_repo._games.values()))
+        games = [
+            game_model.to_game()
+            for game_model in self._games_repo._game_models.values()
+            if game_model.player.name == player_name
+        ]
         if not games:
             raise PlayerNotFoundError()
-        return Player(name=player_name, games=games)
-    
-    def save(self, player: Player):
-        raise NotImplementedError()
+        player_stats = self._players_stats.get(player_name)
+        if not player_stats:
+            player_stats = PlayerStats(
+                name=player_name,
+                total_games=0,
+                games_won=0,
+                games_lost=0,
+                ranking=None,
+            )
+            self._players_stats[player_name] = player_stats
+        return Player(
+            name=player_name, 
+            games=games, 
+            total_wins=player_stats.games_won, 
+            total_losses=player_stats.games_lost,
+            ranking=player_stats.ranking,
+        )
+
+    def get_top_players(self, n: int) -> list[PlayerStats]:
+        # Sort players by ranking
+        sorted_players = sorted(
+            self._players_stats.values(),
+            key=lambda ps: (ps.ranking if ps.ranking is not None else float('inf'))
+        )
+        return sorted_players[:n]
+        
+    def save(self, player: Player, game: Game):
+        # User finished a game => update and save player stats
+        player.update_score(game)
+        self._players_stats[player.name] = PlayerStats.from_player(player)
+        # Compute ranking (sorting based on number of wins - number of losses)
+        scores = {
+            player_stats.name: player_stats.games_won - player_stats.games_lost
+            for player_stats in self._players_stats.values()
+        }
+        sorted_scores = sorted(scores.items(), key=lambda item: item[1], reverse=True)
+        # Update ranks
+        for rank, (player_name, _) in enumerate(sorted_scores, start=1):
+            player_stats = self._players_stats[player_name]
+            player_stats.ranking = rank
+            self._players_stats[player_name] = player_stats
+        self.persist()

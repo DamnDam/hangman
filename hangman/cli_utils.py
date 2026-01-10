@@ -1,7 +1,7 @@
 import requests
 
 from models import PlayerNotFoundError
-from views import GamePublic, PlayerPublic
+from views import GamePublic, PlayerPublic, PlayerStats
 
 SERVER_URL = "http://localhost:8000"
 
@@ -65,3 +65,12 @@ def get_player(
         if e.response.status_code == 404:
             raise PlayerNotFoundError from e
         raise
+
+def get_top_players(
+        n: int = 10,
+) -> list[PlayerStats]:
+    players_data = request(
+        method="GET",
+        endpoint=f"/top?n={n}",
+    )
+    return [PlayerStats(**player_data) for player_data in players_data]

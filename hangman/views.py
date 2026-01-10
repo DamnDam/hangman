@@ -81,6 +81,7 @@ class PlayerPublic(BaseModel):
     total_games: int
     games_won: int
     games_lost: int
+    ranking: int | None
 
     @staticmethod
     def from_player(player: 'Player') -> 'PlayerPublic':
@@ -89,8 +90,26 @@ class PlayerPublic(BaseModel):
             name=player.name,
             active_games = [GamePublic.from_game(game) for game in player.games if game.game_status == GameStatus.IN_PROGRESS],
             total_games = len(player.games),
-            games_won = len([game for game in player.games if game.game_status == GameStatus.WON]),
-            games_lost = len([game for game in player.games if game.game_status == GameStatus.LOST]),
+            games_won = player.total_wins,
+            games_lost = player.total_losses,
+            ranking = player.ranking,
+        )
+    
+class PlayerStats(BaseModel):
+    name: str
+    total_games: int
+    games_won: int
+    games_lost: int
+    ranking: int | None = None
+
+    @staticmethod
+    def from_player(player: 'Player') -> 'PlayerStats':
+        return PlayerStats(
+            name=player.name,
+            total_games=len(player.games),
+            games_won=player.total_wins,
+            games_lost=player.total_losses,
+            ranking=player.ranking,
         )
     
 class GameCreation(BaseModel):

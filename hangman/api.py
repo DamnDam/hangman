@@ -2,8 +2,8 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 
 from models import GameNotFoundError, GameIsAlreadyOverError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
-from views import GamePublic, PlayerPublic, GameCreation, Letter, Word
-from utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player
+from views import GamePublic, PlayerPublic, PlayerStats, GameCreation, Letter, Word
+from utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player, get_top_players
 
 api = FastAPI()
 
@@ -59,6 +59,11 @@ def get_player_endpoint(
     except PlayerNotFoundError:
         raise HTTPException(status_code=404, detail="Player not found")
 
+@api.get('/top')
+def get_top_players_endpoint(
+    n: int = 10,
+) -> list[PlayerStats]:
+    return get_top_players(n=n)
 
 if __name__ == "__main__":
     uvicorn.run(api, host="0.0.0.0", port=8000)

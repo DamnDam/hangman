@@ -12,7 +12,7 @@ def hangman(
         player_name: str = typer.Option("", '--player', '-p', help="Set the player's name"),
 ):
     print("###################")
-    print("Starting new game !")
+    print("HANGMAN - RANKED !")
     print("###################")
 
     while not player_name:
@@ -24,6 +24,7 @@ def hangman(
         print(f"Welcome back {player_name}!")
 
         print("Your stats:")
+        print(f"Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
         print(f"Total games: {player.total_games}")
         print(f"Games won: {player.games_won}")
         print(f"Games lost: {player.games_lost}")
@@ -97,6 +98,29 @@ def words(
     else:
         print("You must specify either --add or --delete")
 
+@app.command()
+def top(
+    n: int = typer.Option(10, '--number', '-n', help="Number of top players to display"),
+):
+    from cli_utils import get_top_players
+    top_players = get_top_players(n=n)
+    print(f"Top {n} players:")
+    for player in top_players:
+        print(f"\t{player.name} - Games Won: {player.games_won}, Games Lost: {player.games_lost}, Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
+
+@app.command()
+def player(
+    player_name: str = typer.Argument(..., help="The name of the player to retrieve"),
+):
+    try:
+        player = get_player(player_name=player_name)
+        print(f"Player: {player.name}")
+        print(f"Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
+        print(f"Total games: {player.total_games}")
+        print(f"Games won: {player.games_won}")
+        print(f"Games lost: {player.games_lost}")
+    except PlayerNotFoundError:
+        print(f"Player '{player_name}' not found")
 
 if __name__ == "__main__":
     app()

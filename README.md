@@ -47,5 +47,15 @@ python hangman/cli.py words -a myword
 
 Supprimer un mot
 ```bash
-python hangman/cli.py words -d myword
+python hangman/cli.py words -d <my_word>
+```
+
+Voir le profil d'un joueur
+```bash
+python hangman/cli.py player <player_name>
+```
+
+Voir le classement
+```bash
+python hangman/cli.py top
 ```
