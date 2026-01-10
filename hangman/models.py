@@ -1,5 +1,6 @@
 from enum import Enum
 from uuid import uuid4
+from pydantic import BaseModel
 
 def str_uuid() -> str:
     return str(uuid4())
@@ -16,7 +17,6 @@ class GameIsAlreadyOverError(Exception):
 
 class WordAlreadyExists(Exception):
     ...
-
 
 class Game:
     def __init__(

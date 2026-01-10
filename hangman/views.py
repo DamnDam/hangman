@@ -24,6 +24,15 @@ class GameModel(BaseModel):
             game_status=game.game_status,
         )
     
+    def to_game(self) -> 'Game':
+        return Game(
+            id=self.id,
+            max_errors=self.max_errors,
+            word_to_guess=self.word_to_guess,
+            errors=self.errors,
+            selected_letters=self.selected_letters,
+        )
+
 class GameCreation(BaseModel):
     max_errors: int = 5
 
