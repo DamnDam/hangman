@@ -11,6 +11,6 @@ RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
 
 ADD ./hangman /app/hangman
 
-COPY words.txt .
+COPY data /app/data
 
 CMD ["python", "hangman/cli.py"]

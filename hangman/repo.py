@@ -6,45 +6,43 @@ from models import GameNotFoundError, WordAlreadyExists, WordNotFoundError, Play
 from views import GameModel, PlayerModel
 
 class GamesRepo:
-    _games: dict[str, Game]
-    _filename = "games.json"
+    _game_models: dict[str, Game]
+    _filename = "data/games.json"
 
     def __init__(self):
         try:
             self.reload()
         except FileNotFoundError:
-            self._games = {}
+            self._game_models = {}
             self.persist()
 
     def reload(self):
-        self._games = {}
+        self._game_models = {}
         with open(self._filename, "r") as games_file:
             games_data = json.load(games_file)
             for game_dict in games_data:
-                serialized_game = GameModel(**game_dict)
-                self._games[serialized_game.id] = serialized_game.to_game()
+                self._game_models[game_dict["id"]] = GameModel(**game_dict)
 
     def persist(self):
         with open(self._filename, "w") as games_file:
             games_data = [
-                GameModel.from_game(game).model_dump()
-                for game in self._games.values()
+                game_model.model_dump()
+                for game_model in self._game_models.values()
             ]
             json.dump(games_data, games_file)
 
     def save(self, game: Game):
-        self._games[game.id] = game
+        self._game_models[game.id] = GameModel.from_game(game)
         self.persist()
 
-    def get(self, game_id: str):
-        if game_id not in self._games.keys():
+    def get(self, game_id: str) -> Game:
+        if game_id not in self._game_models.keys():
             raise GameNotFoundError()
-        return self._games[game_id]
-
+        return self._game_models[game_id].to_game()
 
 class WordsRepo:
     _words: list[str]
-    _filename = "words.txt"
+    _filename = "data/words.txt"
 
     def __init__(self):
         self.reload()

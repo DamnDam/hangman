@@ -6,18 +6,13 @@ services:
     command: ["python", "hangman/api.py"]
     ports:
       - "8000:8000"
-    depends_on:
-      - hangman-mongo
+    volumes:
+      - games-data:/app/data
 
   hangman-cli:
     image: hangman
     build: .
     command: ["python", "hangman/cli.py", "hangman"]
 
-  hangman-mongo:
-    image: mongo:latest
-    volumes:
-      - mongo-data:/data/db
-
 volumes:
-  mongo-data:
+  games-data:

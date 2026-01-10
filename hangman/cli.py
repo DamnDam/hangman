@@ -30,9 +30,8 @@ def hangman(
 
         if player.active_games:
             print("You have active games:")
-            for i in range(len(player.active_games)):
-                game = player.active_games[i]
-                print(f"\t*{i+1} Game ID: {game.id}, Word so far: {game.word_so_far}, Errors left: {game.errors_left}")
+            for i, iter_game in enumerate(player.active_games):
+                print(f"\t*{i+1} Game ID: {iter_game.id}, Word so far: {iter_game.word_so_far}, Errors left: {iter_game.errors_left}")
             resume = ""
             while not resume.lower() in ['y', 'n']:
                 resume = input("Do you want to resume an active game? (y/n): ")

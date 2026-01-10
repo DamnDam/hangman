@@ -12,8 +12,8 @@ def create_game(
         GameCreation: GameCreation,
 ) -> GamePublic:
     return GamePublic.from_game(init_game(
-        max_errors=GameCreation.max_errors,
         player_name=GameCreation.player_name,
+        max_errors=GameCreation.max_errors,
     ))
 
 
@@ -51,7 +51,7 @@ def delete_word(
 @api.get('/players/{player_name}')
 def get_player_endpoint(
     player_name: str,
-):
+) -> PlayerPublic:
     try:
         player = get_player(player_name=player_name)
         return PlayerPublic.from_player(player)
