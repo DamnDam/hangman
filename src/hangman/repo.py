@@ -2,9 +2,9 @@ import random
 import json
 import shutil
 
-from models import Game, Player
-from models import GameNotFoundError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
-from views import PlayerModel, GameModel
+from .models import Game, Player
+from .models import GameNotFoundError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
+from .views import PlayerModel, GameModel
 
 class PlayerRepo:
     _players: dict[str, PlayerModel]
@@ -65,7 +65,9 @@ class PlayerRepo:
             self._players[player_name] = player_model
         sorted_players = sorted(
             self._players.values(),
-            key=lambda player_model: player_model.ranking if player_model.ranking is not None else float('-inf')
+            key=lambda player_model: 
+                player_model.ranking if player_model.ranking is not None 
+                else float('-inf')
         )
         self._players = {
             player_model.name: player_model
@@ -119,7 +121,11 @@ class GamesRepo:
         )
     
     def get_for_player(self, player: Player) -> list[Game]:
-        return [self.get(game_id=game_model.id) for game_model in self._games.values() if game_model.player_name == player.name]
+        return [
+            self.get(game_id=game_model.id) 
+            for game_model in self._games.values() 
+            if game_model.player_name == player.name
+        ]
 
 class WordsRepo:
     _words: list[str]

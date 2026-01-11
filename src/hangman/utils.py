@@ -1,6 +1,6 @@
-from models import Game, Player, GameStatus
-from repo import GamesRepo, WordsRepo, PlayerRepo
-from views import GamePublic, PlayerPublic, PlayerEnum
+from .models import Game, GameStatus
+from .repo import GamesRepo, WordsRepo, PlayerRepo
+from .views import GamePublic, PlayerPublic, PlayerEnum
 
 ################
 # dependencies #
@@ -65,7 +65,11 @@ def get_player(
         games_repo: GamesRepo = dependencies.games_repo,
 ) -> PlayerPublic:
     player = player_repo.get(player_name=player_name)
-    active_games = [game for game in games_repo.get_for_player(player=player) if game.game_status == GameStatus.IN_PROGRESS]
+    active_games = [
+        game 
+        for game in games_repo.get_for_player(player=player) 
+        if game.game_status == GameStatus.IN_PROGRESS
+    ]
     return PlayerPublic.from_player(player=player, active_games=active_games)
 
 def get_top_players(

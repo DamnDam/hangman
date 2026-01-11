@@ -1,12 +1,12 @@
 import typer
 
-from cli_utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player
-from models import GameStatus, PlayerNotFoundError
+from .cli_utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player, get_top_players
+from .models import GameStatus, PlayerNotFoundError
 
 app = typer.Typer()
 
 @app.command()
-def hangman(
+def play(
         cheat_mode: bool = typer.Option(False, '--cheat', help="Activate cheat mode"),
         max_errors: int = typer.Option(0, '--max-errors', '-e', help="Set the maximum number of errors allowed"),
         word_length: int = typer.Option(0, '--word-length', '-l', help="Set the length of the word to guess"),
@@ -119,7 +119,6 @@ def words(
 def top(
     n: int = typer.Option(10, '--number', '-n', help="Number of top players to display"),
 ):
-    from cli_utils import get_top_players
     top_players = get_top_players(n=n)
     print(f"Top {n} players:")
     for player in top_players:
@@ -137,6 +136,3 @@ def player(
         print(f"Games lost: {player.games_lost}")
     except PlayerNotFoundError:
         print(f"Player '{player_name}' not found")
-
-if __name__ == "__main__":
-    app()

@@ -1,9 +1,15 @@
 services:
-
   hangman-api:
     image: hangman
     build: .
-    command: ["python", "hangman/api.py"]
+    pull_policy: never
+    environment:
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "8000"
+    entrypoint: []
+    command: 
+      - "uvicorn"
+      - "hangman.api:api"
     ports:
       - "8000:8000"
     volumes:
@@ -12,7 +18,9 @@ services:
   hangman-cli:
     image: hangman
     build: .
-    command: ["python", "hangman/cli.py", "hangman"]
+    pull_policy: never
+    entrypoint: ["hangman"]
+    command: ["--help"]
 
 volumes:
   games-data:
