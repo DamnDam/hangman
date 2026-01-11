@@ -126,7 +126,11 @@ class WordsRepo:
     _filename = "data/words.txt"
 
     def __init__(self):
-        self.reload()
+        try:
+            self.reload()
+        except FileNotFoundError:
+            shutil.copy("words.txt", self._filename)
+            self.reload()
 
     def reload(self):
         with open(self._filename, "r") as words_file:

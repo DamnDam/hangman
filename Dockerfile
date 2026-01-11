@@ -10,7 +10,6 @@ RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
     uv sync --locked --no-install-project --no-editable
 
 ADD ./hangman /app/hangman
-
-COPY data /app/data
+COPY words.txt /app/words.txt
 
 CMD ["python", "hangman/cli.py"]
