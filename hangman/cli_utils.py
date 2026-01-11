@@ -16,12 +16,15 @@ def request(method: str, endpoint: str, data: dict = None) -> dict:
 def init_game(
         player_name: str,
         max_errors: int | None = None,
+        word_length: int | None = None,
 ) -> GamePublic:
     data={
         "player_name": player_name,
     }
     if max_errors:
         data["max_errors"] = max_errors
+    if word_length:
+        data["word_length"] = word_length
     return GamePublic(**request(
         method="POST",
         endpoint="/games",

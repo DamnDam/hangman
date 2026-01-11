@@ -14,6 +14,7 @@ def create_game(
     return init_game(
         player_name=GameCreation.player_name,
         max_errors=GameCreation.max_errors,
+        word_length=GameCreation.word_length,
     )
 
 

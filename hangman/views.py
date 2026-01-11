@@ -38,7 +38,7 @@ class PlayerPublic(PlayerEnum):
 class GameCreation(BaseModel):
     player_name: str
     max_errors: int = 5
-
+    word_length: int | None = None
 
 class GameBase(GameCreation):
     id: str

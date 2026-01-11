@@ -19,6 +19,7 @@ dependencies = Dependencies()
 def init_game(
         player_name: str,
         max_errors: int,
+        word_length: int | None = None,
         games_repo: GamesRepo = dependencies.games_repo,
         words_repo: WordsRepo = dependencies.words_repo,
         player_repo: PlayerRepo = dependencies.player_repo,

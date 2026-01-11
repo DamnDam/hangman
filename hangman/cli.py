@@ -64,7 +64,11 @@ def hangman(
 
     # init game
     if not game:
-        game = init_game(player_name=player_name, max_errors=max_errors)
+        game = init_game(
+            player_name=player_name, 
+            max_errors=max_errors if max_errors > 0 else None,
+            word_length=word_length if word_length > 0 else None,
+        )
         print(f"New game created with ID {game.id}")
 
     if cheat_mode:

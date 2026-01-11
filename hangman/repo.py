@@ -141,7 +141,11 @@ class WordsRepo:
             for word in self._words:
                 words_file.write(f"{word}\n")
 
-    def get_random_word(self) -> str:
+    def get_random_word(self, word_length: int | None = None) -> str:
+        if word_length is not None:
+            filtered_words = [word for word in self._words if len(word) == word_length]
+            if filtered_words:
+                return random.choice(filtered_words)
         return random.choice(self._words)
 
     def add_word(self, word: str):
