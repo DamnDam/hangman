@@ -9,7 +9,7 @@ dependencies = [
     "anyio==4.7.0",
     "click==8.1.7",
     "fastapi==0.115.6",
-    "h11==0.14.0",
+    "h11==0.16.0",
     "idna==3.10",
     "markdown-it-py==3.0.0",
     "mdurl==0.1.2",
