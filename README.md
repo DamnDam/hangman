@@ -57,7 +57,7 @@ Le container est basé sur Debian, l'interface vers le Docker du système hôte 
 
 ### UV
 
-UV est le gestionaire de projet Python le plus avancé à ce jour.
+UV est le gestionaire de projet Python le plus avancé à ce jour. 
 https://docs.astral.sh/uv/#installation
 
 Pour rebuilder le projet

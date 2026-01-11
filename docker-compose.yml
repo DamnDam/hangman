@@ -10,10 +10,9 @@ services:
     command: 
       - "uvicorn"
       - "hangman.api:api"
-    ports:
-      - "8000:8000"
     volumes:
       - games-data:/app/data
+    network_mode: "host"
 
   hangman-cli:
     image: hangman
@@ -21,6 +20,8 @@ services:
     pull_policy: never
     entrypoint: ["hangman"]
     command: ["--help"]
+    network_mode: "host"
+    
 
 volumes:
   games-data:
