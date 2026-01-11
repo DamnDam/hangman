@@ -1,7 +1,7 @@
 import typer
 
-from .cli_utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player, get_top_players
-from .models import GameStatus, PlayerNotFoundError
+from .utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player, get_top_players
+from ..models import GameStatus, PlayerNotFoundError
 
 app = typer.Typer()
 
@@ -144,4 +144,4 @@ def serve(
 ):
     """Serve the Hangman API using Uvicorn."""
     import uvicorn
-    uvicorn.run("hangman.api:api", host=host, port=port, reload=True)
+    uvicorn.run("hangman:api", host=host, port=port, reload=True)

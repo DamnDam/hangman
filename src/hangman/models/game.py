@@ -1,74 +1,17 @@
-from enum import Enum
 from uuid import uuid4
+
+from .common import GameStatus, GameIsAlreadyOverError
+from .player import Player
 
 def str_uuid() -> str:
     return str(uuid4())
-
-class GameNotFoundError(Exception):
-    ...
-
-class GameIsAlreadyOverError(Exception):
-    ...
-
-class WordNotFoundError(Exception):
-    ...
-
-class WordAlreadyExists(Exception):
-    ...
-
-class PlayerNotFoundError(Exception):
-    ...
-
-class Player:
-    def __init__(
-            self,
-            name: str,
-            total_wins: int = 0,
-            total_losses: int = 0,
-            ranking: int | None = None,
-    ):
-        self._name = name
-        self._total_wins = total_wins
-        self._total_losses = total_losses
-        self._ranking = ranking
-
-    @property
-    def id(self) -> str:
-        return self._id
-
-    @property
-    def name(self) -> str:
-        return self._name
-    
-    @property
-    def total_wins(self) -> int:
-        return self._total_wins
-    
-    @property
-    def total_losses(self) -> int:
-        return self._total_losses
-    
-    @property
-    def ranking(self) -> int | None:
-        return self._ranking
-    
-    def update_score(self, game: "Game") -> None:
-        if game.game_status == GameStatus.WON:
-            self._total_wins += 1
-        elif game.game_status == GameStatus.LOST:
-            self._total_losses += 1
-
-class GameStatus(str, Enum):
-    IN_PROGRESS = "in_progress"
-    WON = "won"
-    LOST = "lost"
 
 class Game:
     def __init__(
             self,
             max_errors: int,
             word_to_guess: str,
-            player: "Player",
+            player: Player,
             id: str | None = None,
             errors: int = 0,
             selected_letters: list[str] | None = None,
@@ -89,7 +32,7 @@ class Game:
         return self._word_to_guess
 
     @property
-    def player(self) -> "Player":
+    def player(self) -> Player:
         return self._player
 
     @property

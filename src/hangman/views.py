@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 from .models import Game, GameStatus, Player
 
-
 class PlayerBase(BaseModel):
     name: str
 

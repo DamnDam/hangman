@@ -1,13 +1,13 @@
-from .models import Game, GameStatus
-from .repo import GamesRepo, WordsRepo, PlayerRepo
-from .views import GamePublic, PlayerPublic, PlayerEnum
+from ..models import Game, GameStatus
+from ..repos import GamesRepo, WordsRepo, PlayersRepo
+from ..views import GamePublic, PlayerPublic, PlayerEnum
 
 ################
 # dependencies #
 ################
 class Dependencies:
     words_repo = WordsRepo()
-    player_repo = PlayerRepo()
+    player_repo = PlayersRepo()
     games_repo = GamesRepo(player_repo=player_repo)
 
 dependencies = Dependencies()
@@ -22,7 +22,7 @@ def init_game(
         word_length: int | None = None,
         games_repo: GamesRepo = dependencies.games_repo,
         words_repo: WordsRepo = dependencies.words_repo,
-        player_repo: PlayerRepo = dependencies.player_repo,
+        player_repo: PlayersRepo = dependencies.player_repo,
 ) -> GamePublic:
     player = player_repo.get(player_name=player_name, nofail=True)
     game = Game(
@@ -37,14 +37,14 @@ def guess_letter(
         game_id: str,
         letter: str,
         games_repo: GamesRepo = dependencies.games_repo,
-        player_repo: PlayerRepo = dependencies.player_repo,
+        player_repo: PlayersRepo = dependencies.player_repo,
 ) -> GamePublic:
     game = games_repo.get(game_id=game_id)
     game.add_selected_letter(letter=letter)
     games_repo.save(game=game)
     if game.game_status != GameStatus.IN_PROGRESS:
         # Game is over, update player stats
-        player_repo.save(player=game.player, game=game)
+        player_repo.save_result(player=game.player, game_status=game.game_status)
     return GamePublic.from_game(game=game)
 
 def add_word_to_repo(
@@ -61,19 +61,19 @@ def delete_word_from_repo(
 
 def get_player(
         player_name: str,
-        player_repo: PlayerRepo = dependencies.player_repo,
+        player_repo: PlayersRepo = dependencies.player_repo,
         games_repo: GamesRepo = dependencies.games_repo,
 ) -> PlayerPublic:
     player = player_repo.get(player_name=player_name)
     active_games = [
         game 
-        for game in games_repo.get_for_player(player=player) 
+        for game in games_repo.list_for_player(player_name=player_name) 
         if game.game_status == GameStatus.IN_PROGRESS
     ]
     return PlayerPublic.from_player(player=player, active_games=active_games)
 
 def get_top_players(
         n: int = 10,
-        player_repo: PlayerRepo = dependencies.player_repo,
+        player_repo: PlayersRepo = dependencies.player_repo,
 ) -> list[PlayerEnum]:
     return player_repo.get_top_players(n=n)

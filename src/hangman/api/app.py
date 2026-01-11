@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException
 
-from .models import GameNotFoundError, GameIsAlreadyOverError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
-from .views import GamePublic, PlayerPublic, PlayerEnum, GameCreation, Letter, Word
+from ..models import GameNotFoundError, GameIsAlreadyOverError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
+from ..views import GamePublic, PlayerPublic, PlayerEnum, GameCreation, Letter, Word
 from .utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player, get_top_players
 
-api = FastAPI()
+app = FastAPI()
 
-@api.post('/games')
+@app.post('/games')
 def create_game(
         GameCreation: GameCreation,
 ) -> GamePublic:
@@ -16,7 +16,7 @@ def create_game(
         word_length=GameCreation.word_length,
     )
 
-@api.post('/games/{game_id}/selected_letters')
+@app.post('/games/{game_id}/selected_letters')
 def add_selected_letter(
         game_id: str,
         letter: Letter,
@@ -28,7 +28,7 @@ def add_selected_letter(
     except GameIsAlreadyOverError:
         raise HTTPException(status_code=400, detail="Game is already over")
 
-@api.post('/words', status_code=201)
+@app.post('/words', status_code=201)
 def add_word(
     word: Word,
 ) -> None:
@@ -37,7 +37,7 @@ def add_word(
     except WordAlreadyExists:
         raise HTTPException(status_code=409, detail="Word already exists")
 
-@api.delete('/words/{word}', status_code=204)
+@app.delete('/words/{word}', status_code=204)
 def delete_word(
     word: str,
 ) -> None:
@@ -46,7 +46,7 @@ def delete_word(
     except WordNotFoundError:
         raise HTTPException(status_code=404, detail="Word not found")
 
-@api.get('/players/{player_name}')
+@app.get('/players/{player_name}')
 def get_player_endpoint(
     player_name: str,
 ) -> PlayerPublic:
@@ -56,7 +56,7 @@ def get_player_endpoint(
     except PlayerNotFoundError:
         raise HTTPException(status_code=404, detail="Player not found")
 
-@api.get('/top')
+@app.get('/top')
 def get_top_players_endpoint(
     n: int = 10,
 ) -> list[PlayerEnum]:

@@ -1,7 +1,7 @@
 import requests
 
-from .models import PlayerNotFoundError
-from .views import GamePublic, PlayerPublic, PlayerEnum
+from ..models import PlayerNotFoundError
+from ..views import GamePublic, PlayerPublic, PlayerEnum
 
 SERVER_URL = "http://localhost:8000"
 
