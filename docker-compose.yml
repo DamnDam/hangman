@@ -6,10 +6,7 @@ services:
     environment:
       UVICORN_HOST: "0.0.0.0"
       UVICORN_PORT: "8000"
-    entrypoint: []
-    command: 
-      - "uvicorn"
-      - "hangman.api:api"
+    command: ["serve"]
     volumes:
       - games-data:/app/data
     network_mode: "host"
@@ -18,7 +15,6 @@ services:
     image: hangman
     build: .
     pull_policy: never
-    entrypoint: ["hangman"]
     command: ["--help"]
     network_mode: "host"
     

@@ -14,7 +14,7 @@ hangman play
 
 Démarrer l'API en python local
 ```bash
-uvicorn hangman.api:api --port 8000
+hangman serve --port 8000
 ```
 
 Ajouter un mot

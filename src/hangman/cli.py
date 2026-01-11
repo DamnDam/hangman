@@ -136,3 +136,12 @@ def player(
         print(f"Games lost: {player.games_lost}")
     except PlayerNotFoundError:
         print(f"Player '{player_name}' not found")
+
+@app.command()
+def serve(
+    host: str = typer.Option("localhost", help="Host to serve the API on"),
+    port: int = typer.Option(8000, help="Port to serve the API on"),
+):
+    """Serve the Hangman API using Uvicorn."""
+    import uvicorn
+    uvicorn.run("hangman.api:api", host=host, port=port, reload=True)
