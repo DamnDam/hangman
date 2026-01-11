@@ -8,12 +8,15 @@ app = typer.Typer()
 @app.command()
 def hangman(
         cheat_mode: bool = typer.Option(False, '--cheat', help="Activate cheat mode"),
-        max_errors: int = typer.Option(5, '-e', help="Set the maximum number of errors allowed"),
+        max_errors: int = typer.Option(0, '--max-errors', '-e', help="Set the maximum number of errors allowed"),
+        word_length: int = typer.Option(0, '--word-length', '-l', help="Set the length of the word to guess"),
         player_name: str = typer.Option("", '--player', '-p', help="Set the player's name"),
+        new_game: bool = typer.Option(False, '--new', '-n', help="Start a new game even if there are active games", is_flag=True),
+        resume_game: str = typer.Option("", '--resume', '-r', help="Resume an active game by ID")
 ):
     print("###################")
     print("HANGMAN - RANKED !")
-    print("###################")
+    print("####################\n")
 
     while not player_name:
         player_name = input("Enter your name: ")
@@ -27,7 +30,18 @@ def hangman(
         print(f"Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
         print(f"Games won: {player.games_won}")
         print(f"Games lost: {player.games_lost}")
+        print("####################\n")
 
+        if new_game:
+            pass  # start a new game regardless of active games
+        if resume_game:
+            for iter_game in player.active_games:
+                if iter_game.id == resume_game:
+                    game = iter_game
+                    print(f"Resuming game {game.id}...")
+                    break
+            if not game:
+                print(f"No active game found with ID {resume_game}\n")
         if player.active_games:
             print("You have active games:")
             for i, iter_game in enumerate(player.active_games):
