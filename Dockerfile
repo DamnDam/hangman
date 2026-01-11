@@ -9,6 +9,4 @@ RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
     --mount=type=bind,source=./,target=/app,readonly \
     uv sync --locked --no-editable
 
-COPY words.txt ./
-
 ENTRYPOINT ["hangman"]

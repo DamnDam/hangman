@@ -1,5 +1,6 @@
 import random
 import json
+import os
 import shutil
 
 from .models import Game, Player
@@ -11,6 +12,7 @@ class PlayerRepo:
     _filename: str = "data/players.json"
 
     def __init__(self,):
+        os.makedirs(os.path.dirname(self._filename), exist_ok=True)
         try:
             self.reload()
         except FileNotFoundError:
@@ -82,6 +84,7 @@ class GamesRepo:
 
     def __init__(self, player_repo: PlayerRepo):
         self._player_repo = player_repo
+        os.makedirs(os.path.dirname(self._filename), exist_ok=True)
         try:
             self.reload()
         except FileNotFoundError:
@@ -132,10 +135,12 @@ class WordsRepo:
     _filename = "data/words.txt"
 
     def __init__(self):
+        os.makedirs(os.path.dirname(self._filename), exist_ok=True)
         try:
             self.reload()
         except FileNotFoundError:
-            shutil.copy("words.txt", self._filename)
+            src_words_path = os.path.join(os.path.dirname(__file__), "words.txt")
+            shutil.copy(src_words_path, self._filename)
             self.reload()
 
     def reload(self):
