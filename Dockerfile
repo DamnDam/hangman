@@ -1,6 +1,5 @@
 FROM python:3.13
 
-RUN mkdir /app
 WORKDIR /app
 
 ENV UV_PROJECT_ENVIRONMENT=/usr/local

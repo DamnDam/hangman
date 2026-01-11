@@ -29,7 +29,8 @@
 
 	"remoteEnv": {
 		"UV_LINK_MODE": "copy",
-		"UV_PROJECT_ENVIRONMENT": "/home/devcontainer/.local/"
+		"UV_PROJECT_ENVIRONMENT": "/home/devcontainer/.venv",
+		"UV_PYTHON_PREFERENCE": "system"
 	},
 	
 	// Uncomment the next line to run commands after the container is created.
@@ -38,6 +39,9 @@
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
+			"settings": {
+				"python.defaultInterpreterPath": "/home/devcontainer/.venv/bin/python"
+			},
 			"extensions": [
 				"ms-python.python"
 			]
