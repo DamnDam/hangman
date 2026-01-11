@@ -1,6 +1,5 @@
 from enum import Enum
 from uuid import uuid4
-from pydantic import BaseModel
 
 def str_uuid() -> str:
     return str(uuid4())
@@ -24,13 +23,11 @@ class Player:
     def __init__(
             self,
             name: str,
-            games: list["Game"] | None = None,
             total_wins: int = 0,
             total_losses: int = 0,
             ranking: int | None = None,
     ):
         self._name = name
-        self._games = games or []
         self._total_wins = total_wins
         self._total_losses = total_losses
         self._ranking = ranking
@@ -42,10 +39,6 @@ class Player:
     @property
     def name(self) -> str:
         return self._name
-    
-    @property
-    def games(self) -> list["Game"]:
-        return self._games
     
     @property
     def total_wins(self) -> int:

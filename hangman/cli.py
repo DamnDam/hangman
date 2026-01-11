@@ -25,7 +25,6 @@ def hangman(
 
         print("Your stats:")
         print(f"Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
-        print(f"Total games: {player.total_games}")
         print(f"Games won: {player.games_won}")
         print(f"Games lost: {player.games_lost}")
 
@@ -116,7 +115,6 @@ def player(
         player = get_player(player_name=player_name)
         print(f"Player: {player.name}")
         print(f"Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
-        print(f"Total games: {player.total_games}")
         print(f"Games won: {player.games_won}")
         print(f"Games lost: {player.games_lost}")
     except PlayerNotFoundError:

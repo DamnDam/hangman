@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 
 from models import GameNotFoundError, GameIsAlreadyOverError, WordAlreadyExists, WordNotFoundError, PlayerNotFoundError
-from views import GamePublic, PlayerPublic, PlayerStats, GameCreation, Letter, Word
+from views import GamePublic, PlayerPublic, PlayerEnum, GameCreation, Letter, Word
 from utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player, get_top_players
 
 api = FastAPI()
@@ -11,10 +11,10 @@ api = FastAPI()
 def create_game(
         GameCreation: GameCreation,
 ) -> GamePublic:
-    return GamePublic.from_game(init_game(
+    return init_game(
         player_name=GameCreation.player_name,
         max_errors=GameCreation.max_errors,
-    ))
+    )
 
 
 @api.post('/games/{game_id}/selected_letters')
@@ -23,8 +23,7 @@ def add_selected_letter(
         letter: Letter,
 ) -> GamePublic:
     try:
-        game = guess_letter(game_id=game_id, letter=letter.letter)
-        return GamePublic.from_game(game)
+        return guess_letter(game_id=game_id, letter=letter.letter)
     except GameNotFoundError:
         raise HTTPException(status_code=404, detail="Game not found")
     except GameIsAlreadyOverError:
@@ -53,8 +52,7 @@ def get_player_endpoint(
     player_name: str,
 ) -> PlayerPublic:
     try:
-        player = get_player(player_name=player_name)
-        return PlayerPublic.from_player(player)
+        return get_player(player_name=player_name)
 
     except PlayerNotFoundError:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -62,7 +60,7 @@ def get_player_endpoint(
 @api.get('/top')
 def get_top_players_endpoint(
     n: int = 10,
-) -> list[PlayerStats]:
+) -> list[PlayerEnum]:
     return get_top_players(n=n)
 
 if __name__ == "__main__":

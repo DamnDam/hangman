@@ -1,7 +1,7 @@
 import requests
 
 from models import PlayerNotFoundError
-from views import GamePublic, PlayerPublic, PlayerStats
+from views import GamePublic, PlayerPublic, PlayerEnum
 
 SERVER_URL = "http://localhost:8000"
 
@@ -15,15 +15,17 @@ def request(method: str, endpoint: str, data: dict = None) -> dict:
 
 def init_game(
         player_name: str,
-        max_errors: int,
+        max_errors: int | None = None,
 ) -> GamePublic:
+    data={
+        "player_name": player_name,
+    }
+    if max_errors:
+        data["max_errors"] = max_errors
     return GamePublic(**request(
         method="POST",
         endpoint="/games",
-        data={
-            "player_name": player_name,
-            "max_errors": max_errors,
-        },
+        data=data,
     ))
 
 def guess_letter(
@@ -68,9 +70,9 @@ def get_player(
 
 def get_top_players(
         n: int = 10,
-) -> list[PlayerStats]:
+) -> list[PlayerEnum]:
     players_data = request(
         method="GET",
         endpoint=f"/top?n={n}",
     )
-    return [PlayerStats(**player_data) for player_data in players_data]
+    return [PlayerEnum(**player_data) for player_data in players_data]
