@@ -1,14 +1,18 @@
 from ..models import Game, GameStatus
-from ..repos import GamesRepo, WordsRepo, PlayersRepo
-from ..views import GamePublic, PlayerPublic, PlayerEnum
+from ..repos import GamesRepo, PlayersRepo
+from ..views import GamePublic, PlayerPublic, PlayerEnum, Word
+from ..utils import request_factory
+
+WORD_API_URL = "http://localhost:8008"
 
 ################
 # dependencies #
 ################
 class Dependencies:
-    words_repo = WordsRepo()
     player_repo = PlayersRepo()
     games_repo = GamesRepo(player_repo=player_repo)
+    request = staticmethod(request_factory(server_url=WORD_API_URL))
+
 
 dependencies = Dependencies()
 
@@ -16,18 +20,29 @@ dependencies = Dependencies()
 ##########################
 # use cases "controller" #
 ##########################
+
+def get_random_word(
+        word_length: int | None = None,
+        request = dependencies.request
+) -> str:
+    word_data = Word(**request(
+        method="GET",
+        endpoint="/word",
+        data={"word_length": word_length} if word_length else None,
+    ))
+    return word_data.word
+
 def init_game(
         player_name: str,
         max_errors: int,
         word_length: int | None = None,
         games_repo: GamesRepo = dependencies.games_repo,
-        words_repo: WordsRepo = dependencies.words_repo,
         player_repo: PlayersRepo = dependencies.player_repo,
 ) -> GamePublic:
     player = player_repo.get(player_name=player_name, nofail=True)
     game = Game(
         max_errors=max_errors,
-        word_to_guess=words_repo.get_random_word(word_length=word_length),
+        word_to_guess=get_random_word(word_length=word_length),
         player=player,
     )
     games_repo.save(game=game)
@@ -46,18 +61,6 @@ def guess_letter(
         # Game is over, update player stats
         player_repo.save_result(player=game.player, game_status=game.game_status)
     return GamePublic.from_game(game=game)
-
-def add_word_to_repo(
-        word: str,
-        words_repo: WordsRepo = dependencies.words_repo,
-):
-    words_repo.add_word(word=word)
-
-def delete_word_from_repo(
-        word: str,
-        words_repo: WordsRepo = dependencies.words_repo,
-):
-    words_repo.delete_word(word=word)
 
 def get_player(
         player_name: str,

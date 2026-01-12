@@ -1,7 +1,9 @@
 import typer
+import multiprocessing
 
 from .utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player, get_top_players
 from ..models import GameStatus, PlayerNotFoundError
+from ..utils import uvicorn_serve
 
 app = typer.Typer()
 
@@ -95,27 +97,6 @@ def play(
             print("you didn't enter a letter")
 
 @app.command()
-def words(
-    word: str = typer.Argument(..., help="The word to add to the repository"),
-    add: bool = typer.Option(False, '--add', '-a', help="Add a word to the repository", is_flag=True),
-    delete: bool = typer.Option(False, '--delete', '-d', help="Delete a word from the repository", is_flag=True),
-):
-    if add:
-        try:
-            add_word_to_repo(word=word)
-            print(f'Word "{word}" added to the repository')
-        except Exception as e:
-            print(f"Error: {e}")
-    elif delete:
-        try:
-            delete_word_from_repo(word=word)
-            print(f'Word "{word}" deleted from the repository')
-        except Exception as e:
-            print(f"Error: {e}")
-    else:
-        print("You must specify either --add or --delete")
-
-@app.command()
 def top(
     n: int = typer.Option(10, '--number', '-n', help="Number of top players to display"),
 ):
@@ -137,11 +118,77 @@ def player(
     except PlayerNotFoundError:
         print(f"Player '{player_name}' not found")
 
-@app.command()
-def serve(
+
+words_app = typer.Typer()
+app.add_typer(words_app, name="words")
+
+@words_app.command("add")
+def add_word(
+    word: str = typer.Argument(..., help="The word to add to the repository"),
+):
+    try:
+        add_word_to_repo(word=word)
+        print(f'Word "{word}" added to the repository')
+    except Exception as e:
+            print(f"Error: {e}")
+
+@words_app.command("delete")
+def delete_word(
+    word: str = typer.Argument(..., help="The word to delete from the repository"),
+):
+    try:
+        delete_word_from_repo(word=word)
+        print(f'Word "{word}" deleted from the repository')
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+serve_app = typer.Typer()
+app.add_typer(serve_app, name="serve")
+
+@serve_app.command("api")
+def serve_api(
     host: str = typer.Option("localhost", help="Host to serve the API on"),
     port: int = typer.Option(8000, help="Port to serve the API on"),
 ):
-    """Serve the Hangman API using Uvicorn."""
-    import uvicorn
-    uvicorn.run("hangman:api", host=host, port=port, reload=True)
+    uvicorn_serve(
+        app="hangman:api",
+        host=host,
+        port=port,
+        service_name="API",
+    )
+
+@serve_app.command("word")
+def serve_word_api(
+    host: str = typer.Option("localhost", help="Host to serve the Word API on"),
+    port: int = typer.Option(8008, help="Port to serve the Word API on"),
+):
+    uvicorn_serve(
+        app="hangman:word_api",
+        host=host,
+        port=port,
+        service_name="WORD",
+    )
+
+@serve_app.callback( invoke_without_command=True)
+def serve_callback(
+    ctx: typer.Context,
+    port: int = typer.Option(8000, help="Port to serve the API on"),
+    word_port: int = typer.Option(8008, help="Port to serve the Word API on"),
+    host: str = typer.Option("localhost", help="Host to serve the APIs on"),
+):
+    if not ctx.invoked_subcommand is None:
+        return
+    
+    """Serve the Hangman application with all required components."""
+    word_api_process = multiprocessing.Process(
+        target=serve_word_api,
+        kwargs={"host": host, "port": word_port},
+    )
+    word_api_process.start()
+
+    try:
+        serve_api(host=host, port=port)
+    finally:
+        word_api_process.terminate()
+        word_api_process.join()

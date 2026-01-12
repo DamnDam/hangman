@@ -6,7 +6,21 @@ services:
     environment:
       UVICORN_HOST: "0.0.0.0"
       UVICORN_PORT: "8000"
-    command: ["serve"]
+    command: ["serve", "api"]
+    volumes:
+      - games-data:/app/data
+    network_mode: "host"
+    depends_on:
+      - hangman-word
+
+  hangman-word:
+    image: hangman
+    build: .
+    pull_policy: never
+    environment:
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "8008"
+    command: ["serve", "word"]
     volumes:
       - games-data:/app/data
     network_mode: "host"

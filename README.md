@@ -19,12 +19,12 @@ hangman serve --port 8000
 
 Ajouter un mot
 ```bash
-hangman words -a <my_word>
+hangman words add <my_word>
 ```
 
 Supprimer un mot
 ```bash
-hangman words -d <my_word>
+hangman words delete <my_word>
 ```
 
 Voir le profil d'un joueur
