@@ -1,9 +1,20 @@
+import importlib.resources
 import requests
 import uvicorn
 from uvicorn.config import LOGGING_CONFIG
 
+PACKAGE = __package__
+
+def copy_text_resource(resource: str, dest_path: str):
+    with (
+            importlib.resources.open_text(f"{PACKAGE}.res", resource, encoding='utf-8') as src,
+            open(dest_path, 'w', encoding='utf-8') as dst
+    ):
+        for line in src:
+            dst.write(line)
+
 def request_factory(server_url: str):
-    def request(*, method: str, endpoint: str, data: dict = None) -> dict:
+    def request(method: str, endpoint: str, data: dict = None) -> dict:
         url = server_url + endpoint
         response = requests.request(method=method, url=url, json=data)
         response.raise_for_status()
@@ -14,19 +25,18 @@ def request_factory(server_url: str):
     return request
 
 def uvicorn_serve(
-        app: str = "hangman:api",
-        port: int = 8000,
-        host: str = "localhost",
-        service_name: str = "hangman_service",
+        app: str,
+        port: int,
+        host: str,
+        service_name: str,
 ):
     """Serve using Uvicorn."""
     log_config = LOGGING_CONFIG.copy()
-
     log_config["formatters"]["access"]["fmt"] = f"[{service_name}] %(levelprefix)s %(msecs)03dms %(client_addr)s - \"%(request_line)s\" %(status_code)s"
     log_config["formatters"]["default"]["fmt"] = f"[{service_name}] %(levelprefix)s %(message)s"
 
     uvicorn.run(
-        app,
+        app=f"{PACKAGE}:{app}",
         host=host,
         port=port,
         reload=True,

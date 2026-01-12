@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException
 
 from ..models import GameNotFoundError, GameIsAlreadyOverError, PlayerNotFoundError
 from ..views import GamePublic, PlayerPublic, PlayerEnum, GameCreation, Letter
-from .utils import init_game, guess_letter, get_player, get_top_players
+
+from .utils import *
 
 app = FastAPI()
 
@@ -30,7 +31,7 @@ def add_selected_letter(
 
 @app.get('/players/{player_name}')
 def get_player_endpoint(
-    player_name: str,
+        player_name: str,
 ) -> PlayerPublic:
     try:
         return get_player(player_name=player_name)
@@ -40,6 +41,6 @@ def get_player_endpoint(
 
 @app.get('/top')
 def get_top_players_endpoint(
-    n: int = 10,
+        n: int = 10,
 ) -> list[PlayerEnum]:
     return get_top_players(n=n)

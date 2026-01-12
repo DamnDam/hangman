@@ -23,7 +23,7 @@ dependencies = Dependencies()
 
 def get_random_word(
         word_length: int | None = None,
-        request = dependencies.request
+        request = dependencies.request,
 ) -> str:
     word_data = Word(**request(
         method="GET",
@@ -80,3 +80,10 @@ def get_top_players(
         player_repo: PlayersRepo = dependencies.player_repo,
 ) -> list[PlayerEnum]:
     return player_repo.get_top_players(n=n)
+
+__all__ = [
+    "init_game",
+    "guess_letter",
+    "get_player",
+    "get_top_players",
+]

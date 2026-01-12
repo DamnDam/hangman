@@ -4,14 +4,14 @@ from ..models import PlayerNotFoundError
 from ..views import GamePublic, PlayerPublic, PlayerEnum
 from ..utils import request_factory
 
-API_URL = "http://localhost:8000"
+MAIN_API_URL = "http://localhost:8000"
 WORD_API_URL = "http://localhost:8008"
 
 ################
 # dependencies #
 ################
 class Dependencies:
-    request = staticmethod(request_factory(server_url=API_URL))
+    main_request = staticmethod(request_factory(server_url=MAIN_API_URL))
     word_request = staticmethod(request_factory(server_url=WORD_API_URL))
 
 
@@ -26,7 +26,7 @@ def init_game(
         player_name: str,
         max_errors: int | None = None,
         word_length: int | None = None,
-        request = dependencies.request
+        request = dependencies.main_request,
 ) -> GamePublic:
     data={
         "player_name": player_name,
@@ -44,7 +44,7 @@ def init_game(
 def guess_letter(
         game_id: str,
         letter: str,
-        request = dependencies.request
+        request = dependencies.main_request,
 ) -> GamePublic:
     return GamePublic(**request(
         method="POST",
@@ -54,7 +54,7 @@ def guess_letter(
 
 def get_player(
         player_name: str,
-        request = dependencies.request
+        request = dependencies.main_request,
 ) -> PlayerPublic:
     print("Getting player:", player_name)
     try:
@@ -69,7 +69,7 @@ def get_player(
 
 def get_top_players(
         n: int = 10,
-        request = dependencies.request
+        request = dependencies.main_request,
 ) -> list[PlayerEnum]:
     players_data = request(
         method="GET",
@@ -79,7 +79,7 @@ def get_top_players(
 
 def add_word_to_repo(
         word: str,
-        request = dependencies.word_request
+        request = dependencies.word_request,
 ) -> None:
     request(
         method="POST",
@@ -89,9 +89,18 @@ def add_word_to_repo(
 
 def delete_word_from_repo(
         word: str,
-        request = dependencies.word_request
+        request = dependencies.word_request,
 ) -> None:
     request(
         method="DELETE",
         endpoint=f"/words/{word}",
     )
+
+__all__ = [
+    "init_game",
+    "guess_letter",
+    "get_player",
+    "get_top_players",
+    "add_word_to_repo",
+    "delete_word_from_repo",
+]

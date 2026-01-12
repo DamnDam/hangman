@@ -12,16 +12,21 @@ class PlayersRepo(BaseRepo):
 
     def get(self, player_name: str, nofail=False) -> Player:
         player_model = self._repo.get(player_name)
-        if not player_model:
+        if player_model:
+            player = Player(
+                name=player_name, 
+                total_wins=player_model.games_won, 
+                total_losses=player_model.games_lost,
+                ranking=player_model.ranking,
+            )
+        else:
             if nofail:
-                return Player(name=player_name)
-            raise PlayerNotFoundError()
-        return Player(
-            name=player_name, 
-            total_wins=player_model.games_won, 
-            total_losses=player_model.games_lost,
-            ranking=player_model.ranking,
-        )
+                player = Player(name=player_name)
+                self._repo[player_name] = PlayerModel.from_player(player)
+                self._persist()
+            else:
+                raise PlayerNotFoundError()
+        return player
 
     def get_top_players(self, n: int) -> list[PlayerModel]:
         return [player_model for player_model in list(self._repo.values())][:n]

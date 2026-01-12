@@ -1,9 +1,10 @@
 import typer
 import multiprocessing
 
-from .utils import init_game, guess_letter, add_word_to_repo, delete_word_from_repo, get_player, get_top_players
 from ..models import GameStatus, PlayerNotFoundError
 from ..utils import uvicorn_serve
+
+from .utils import *
 
 app = typer.Typer()
 
@@ -26,28 +27,32 @@ def play(
     game = None
     try:
         player = get_player(player_name=player_name)
+    except PlayerNotFoundError:
+        print(f"Creating new player with name {player_name}")
+    else:
+        print("\n####################")
         print(f"Welcome back {player_name}!")
-
         print("Your stats:")
         print(f"Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
         print(f"Games won: {player.games_won}")
         print(f"Games lost: {player.games_lost}")
         print("####################\n")
 
-        if new_game:
-            pass  # start a new game regardless of active games
         if resume_game:
             for iter_game in player.active_games:
                 if iter_game.id == resume_game:
                     game = iter_game
                     print(f"Resuming game {game.id}...")
-                    break
             if not game:
                 print(f"No active game found with ID {resume_game}\n")
-        if player.active_games:
+        if not game and not new_game and player.active_games:
             print("You have active games:")
             for i, iter_game in enumerate(player.active_games):
-                print(f"\t*{i+1} Game ID: {iter_game.id}, Word so far: {iter_game.word_so_far}, Errors left: {iter_game.errors_left}")
+                print(
+                    f"\t*{i+1} Game ID: {iter_game.id}, "
+                    f"Word so far: {iter_game.word_so_far}, "
+                    f"Errors left: {iter_game.errors_left}"
+                )
             resume = ""
             while not resume.lower() in ['y', 'n']:
                 resume = input("Do you want to resume an active game? (y/n): ")
@@ -60,9 +65,6 @@ def play(
                         game_index = -1
                 game = player.active_games[game_index]
                 print(f"Resuming game {game.id}...")
-                
-    except PlayerNotFoundError:
-        print(f"Creating new player with name {player_name}")
 
     # init game
     if not game:
@@ -98,16 +100,21 @@ def play(
 
 @app.command()
 def top(
-    n: int = typer.Option(10, '--number', '-n', help="Number of top players to display"),
+        n: int = typer.Option(10, '--number', '-n', help="Number of top players to display"),
 ):
     top_players = get_top_players(n=n)
     print(f"Top {n} players:")
     for player in top_players:
-        print(f"\t{player.name} - Games Won: {player.games_won}, Games Lost: {player.games_lost}, Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
+        print(
+            f"\t{player.name} - "
+            f"Games Won: {player.games_won}, "
+            f"Games Lost: {player.games_lost}, "
+            f"Ranking: {player.ranking if player.ranking is not None else 'Unranked'}"
+        )
 
 @app.command()
 def player(
-    player_name: str = typer.Argument(..., help="The name of the player to retrieve"),
+        player_name: str = typer.Argument(..., help="The name of the player to retrieve"),
 ):
     try:
         player = get_player(player_name=player_name)
@@ -124,7 +131,7 @@ app.add_typer(words_app, name="words")
 
 @words_app.command("add")
 def add_word(
-    word: str = typer.Argument(..., help="The word to add to the repository"),
+        word: str = typer.Argument(..., help="The word to add to the repository"),
 ):
     try:
         add_word_to_repo(word=word)
@@ -134,7 +141,7 @@ def add_word(
 
 @words_app.command("delete")
 def delete_word(
-    word: str = typer.Argument(..., help="The word to delete from the repository"),
+        word: str = typer.Argument(..., help="The word to delete from the repository"),
 ):
     try:
         delete_word_from_repo(word=word)
@@ -148,11 +155,11 @@ app.add_typer(serve_app, name="serve")
 
 @serve_app.command("api")
 def serve_api(
-    host: str = typer.Option("localhost", help="Host to serve the API on"),
-    port: int = typer.Option(8000, help="Port to serve the API on"),
+        host: str = typer.Option("localhost", help="Host to serve the API on"),
+        port: int = typer.Option(8000, help="Port to serve the API on"),
 ):
     uvicorn_serve(
-        app="hangman:api",
+        app="main_api",
         host=host,
         port=port,
         service_name="API",
@@ -160,11 +167,11 @@ def serve_api(
 
 @serve_app.command("word")
 def serve_word_api(
-    host: str = typer.Option("localhost", help="Host to serve the Word API on"),
-    port: int = typer.Option(8008, help="Port to serve the Word API on"),
+        host: str = typer.Option("localhost", help="Host to serve the Word API on"),
+        port: int = typer.Option(8008, help="Port to serve the Word API on"),
 ):
     uvicorn_serve(
-        app="hangman:word_api",
+        app="word_api",
         host=host,
         port=port,
         service_name="WORD",
@@ -172,10 +179,10 @@ def serve_word_api(
 
 @serve_app.callback( invoke_without_command=True)
 def serve_callback(
-    ctx: typer.Context,
-    port: int = typer.Option(8000, help="Port to serve the API on"),
-    word_port: int = typer.Option(8008, help="Port to serve the Word API on"),
-    host: str = typer.Option("localhost", help="Host to serve the APIs on"),
+        ctx: typer.Context,
+        port: int = typer.Option(8000, help="Port to serve the API on"),
+        word_port: int = typer.Option(8008, help="Port to serve the Word API on"),
+        host: str = typer.Option("localhost", help="Host to serve the APIs on"),
 ):
     if not ctx.invoked_subcommand is None:
         return

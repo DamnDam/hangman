@@ -2,13 +2,14 @@ from fastapi import FastAPI, HTTPException
 
 from ..models import WordAlreadyExists, WordNotFoundError
 from ..views import Word
-from .utils import get_random_word, add_word_to_repo, delete_word_from_repo
+
+from .utils import *
 
 app = FastAPI()
 
 @app.get('/word')
 def get_word(
-    word_length: int | None = None,
+        word_length: int | None = None,
 ) -> Word:
     try:
         return get_random_word(word_length=word_length)
@@ -17,7 +18,7 @@ def get_word(
     
 @app.post('/words', status_code=201)
 def add_word(
-    word: Word,
+        word: Word,
 ) -> None:
     try:
         add_word_to_repo(word=word.word)
@@ -26,7 +27,7 @@ def add_word(
 
 @app.delete('/words/{word}', status_code=204)
 def delete_word(
-    word: str,
+        word: str,
 ) -> None:
     try:
         delete_word_from_repo(word=word)

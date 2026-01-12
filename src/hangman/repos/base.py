@@ -1,6 +1,6 @@
 import json
 import os
-from ..res import copy_text_resource
+from ..utils import copy_text_resource
 
 class BaseRepo:
     _repo: dict[str, object]
