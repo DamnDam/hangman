@@ -1,5 +1,5 @@
 from ..repos import WordsRepo
-from ..views import Word
+from ..schemas import Word
 
 ################
 # dependencies #

@@ -1,7 +1,7 @@
 from .base import BaseRepo
 from ..models import Player, GameStatus
 from ..models import PlayerNotFoundError
-from ..views import PlayerModel
+from ..schemas import PlayerModel
 
 class PlayersRepo(BaseRepo):
     _repo: dict[str, PlayerModel]
@@ -29,7 +29,7 @@ class PlayersRepo(BaseRepo):
         return player
 
     def get_top_players(self, n: int) -> list[PlayerModel]:
-        return [player_model for player_model in list(self._repo.values())][:n]
+        return list(self._repo.values())[:n]
         
     def save_result(self, player: Player, game_status: GameStatus):
         # User finished a game => update and save player stats

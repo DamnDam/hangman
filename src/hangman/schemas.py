@@ -2,7 +2,11 @@ from pydantic import BaseModel
 
 from .models import Game, GameStatus, Player
 
-class PlayerBase(BaseModel):
+class BaseSchema(BaseModel):
+    class Config:
+        extra = 'allow'
+
+class PlayerBase(BaseSchema):
     name: str
 
 class PlayerModel(PlayerBase):
@@ -35,7 +39,7 @@ class PlayerPublic(PlayerEnum):
             active_games=[GameEnum.from_game(game=game) for game in active_games],
         )
 
-class GameCreation(BaseModel):
+class GameCreation(BaseSchema):
     player_name: str
     max_errors: int = 5
     word_length: int | None = None
@@ -82,8 +86,8 @@ class GameEnum(GameBase):
 class GamePublic(GameEnum):
     pass
 
-class Letter(BaseModel):
+class Letter(BaseSchema):
     letter: str
 
-class Word(BaseModel):
+class Word(BaseSchema):
     word: str

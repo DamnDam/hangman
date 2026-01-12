@@ -1,6 +1,6 @@
 from ..models import Game, GameStatus
 from ..repos import GamesRepo, PlayersRepo
-from ..views import GamePublic, PlayerPublic, PlayerEnum, Word
+from ..schemas import GamePublic, PlayerPublic, PlayerEnum, Word
 from ..utils import request_factory
 
 WORD_API_URL = "http://localhost:8008"
@@ -25,7 +25,7 @@ def get_random_word(
         word_length: int | None = None,
         request = dependencies.request,
 ) -> str:
-    word_data = Word(**request(
+    word_data = Word.model_validate_json(request(
         method="GET",
         endpoint="/word",
         data={"word_length": word_length} if word_length else None,

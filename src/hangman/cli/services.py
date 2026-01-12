@@ -1,7 +1,7 @@
 from requests import HTTPError
 
 from ..models import PlayerNotFoundError
-from ..views import GamePublic, PlayerPublic, PlayerEnum
+from ..schemas import GamePublic, PlayerPublic, PlayerEnum
 from ..utils import request_factory
 
 MAIN_API_URL = "http://localhost:8000"
@@ -35,7 +35,7 @@ def init_game(
         data["max_errors"] = max_errors
     if word_length:
         data["word_length"] = word_length
-    return GamePublic(**request(
+    return GamePublic.model_validate_json(request(
         method="POST",
         endpoint="/games",
         data=data,
@@ -46,7 +46,7 @@ def guess_letter(
         letter: str,
         request = dependencies.main_request,
 ) -> GamePublic:
-    return GamePublic(**request(
+    return GamePublic.model_validate_json(request(
         method="POST",
         endpoint=f"/games/{game_id}/selected_letters",
         data={"letter": letter},
@@ -58,7 +58,7 @@ def get_player(
 ) -> PlayerPublic:
     print("Getting player:", player_name)
     try:
-        return PlayerPublic(**request(
+        return PlayerPublic.model_validate_json(request(
             method="GET",
             endpoint=f"/players/{player_name}",
         ))
@@ -75,7 +75,7 @@ def get_top_players(
         method="GET",
         endpoint=f"/top?n={n}",
     )
-    return [PlayerEnum(**player_data) for player_data in players_data]
+    return [PlayerEnum.model_validate_json(player_data) for player_data in players_data]
 
 def add_word_to_repo(
         word: str,

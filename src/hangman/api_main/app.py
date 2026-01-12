@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException
 
 from ..models import GameNotFoundError, GameIsAlreadyOverError, PlayerNotFoundError
-from ..views import GamePublic, PlayerPublic, PlayerEnum, GameCreation, Letter
+from ..schemas import GamePublic, PlayerPublic, PlayerEnum, GameCreation, Letter
 
-from .utils import *
+from .services import *
 
 app = FastAPI()
 

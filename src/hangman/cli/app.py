@@ -4,7 +4,7 @@ import multiprocessing
 from ..models import GameStatus, PlayerNotFoundError
 from ..utils import uvicorn_serve
 
-from .utils import *
+from .services import *
 
 app = typer.Typer()
 
@@ -177,17 +177,17 @@ def serve_word_api(
         service_name="WORD",
     )
 
-@serve_app.callback( invoke_without_command=True)
+@serve_app.callback(invoke_without_command=True)
 def serve_callback(
         ctx: typer.Context,
         port: int = typer.Option(8000, help="Port to serve the API on"),
         word_port: int = typer.Option(8008, help="Port to serve the Word API on"),
         host: str = typer.Option("localhost", help="Host to serve the APIs on"),
 ):
+    """Serve the Hangman application with all required components."""
     if not ctx.invoked_subcommand is None:
         return
     
-    """Serve the Hangman application with all required components."""
     word_api_process = multiprocessing.Process(
         target=serve_word_api,
         kwargs={"host": host, "port": word_port},

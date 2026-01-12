@@ -1,6 +1,6 @@
 from .base import BaseRepo
 from ..models import Game, GameNotFoundError
-from ..views import GameModel
+from ..schemas import GameModel
 from .player import PlayersRepo
 
 class GamesRepo(BaseRepo):

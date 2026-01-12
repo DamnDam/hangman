@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException
 
 from ..models import WordAlreadyExists, WordNotFoundError
-from ..views import Word
+from ..schemas import Word
 
-from .utils import *
+from .services import *
 
 app = FastAPI()
 
