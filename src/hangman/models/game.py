@@ -1,12 +1,12 @@
 from uuid import uuid4
 
-from .common import GameStatus, GameIsAlreadyOverError
+from .common import BaseModel, GameStatus, GameIsAlreadyOverError
 from .player import Player
 
 def str_uuid() -> str:
     return str(uuid4())
 
-class Game:
+class Game(BaseModel):
     def __init__(
             self,
             max_errors: int,

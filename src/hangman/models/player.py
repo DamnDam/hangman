@@ -1,6 +1,6 @@
-from .common import GameStatus
+from .common import BaseModel, GameStatus
 
-class Player:
+class Player(BaseModel):
     def __init__(
             self,
             name: str,

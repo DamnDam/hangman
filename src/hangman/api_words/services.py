@@ -32,9 +32,3 @@ def delete_word_from_repo(
         words_repo: WordsRepo = dependencies.words_repo,
 ):
     words_repo.delete_word(word=word)
-
-__all__ = [
-    "get_random_word",
-    "add_word_to_repo",
-    "delete_word_from_repo",
-]

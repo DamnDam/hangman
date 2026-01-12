@@ -22,7 +22,7 @@ def request_factory(server_url: str):
     return request
 
 def uvicorn_serve(
-        app: str,
+        module_name: str,
         port: int,
         host: str,
         service_name: str,
@@ -33,7 +33,7 @@ def uvicorn_serve(
     log_config["formatters"]["default"]["fmt"] = f"[{service_name}] %(levelprefix)s %(message)s"
 
     uvicorn.run(
-        app=f"{PACKAGE}:{app}",
+        app=f"{PACKAGE}.{module_name}:app",
         host=host,
         port=port,
         reload=True,

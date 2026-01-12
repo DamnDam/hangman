@@ -1,6 +1,9 @@
 from enum import Enum
 
-class GameStatus(str, Enum):
+class BaseModel:
+    pass
+
+class GameStatus(BaseModel, str, Enum):
     IN_PROGRESS = "in_progress"
     WON = "won"
     LOST = "lost"
@@ -21,6 +24,7 @@ class PlayerNotFoundError(Exception):
     ...
 
 __all__ = [
+    "BaseModel",
     "GameStatus",
     "GameNotFoundError",
     "GameIsAlreadyOverError",

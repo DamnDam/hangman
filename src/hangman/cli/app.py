@@ -4,7 +4,7 @@ import multiprocessing
 from ..models import GameStatus, PlayerNotFoundError
 from ..utils import uvicorn_serve
 
-from .services import *
+from . import services
 
 app = typer.Typer()
 
@@ -26,7 +26,7 @@ def play(
 
     game = None
     try:
-        player = get_player(player_name=player_name)
+        player = services.get_player(player_name=player_name)
     except PlayerNotFoundError:
         print(f"Creating new player with name {player_name}")
     else:
@@ -68,7 +68,7 @@ def play(
 
     # init game
     if not game:
-        game = init_game(
+        game = services.init_game(
             player_name=player_name, 
             max_errors=max_errors if max_errors > 0 else None,
             word_length=word_length if word_length > 0 else None,
@@ -85,7 +85,7 @@ def play(
         letter = input("You have " + str(game.errors_left) + " errors left. Enter a letter: ")
 
         if 0 < len(letter) < 2:
-            game = guess_letter(game_id=game.id, letter=letter)
+            game = services.guess_letter(game_id=game.id, letter=letter)
 
             if game.game_status == GameStatus.WON:
                 print("You won \\o/")
@@ -102,7 +102,7 @@ def play(
 def top(
         n: int = typer.Option(10, '--number', '-n', help="Number of top players to display"),
 ):
-    top_players = get_top_players(n=n)
+    top_players = services.get_top_players(n=n)
     print(f"Top {n} players:")
     for player in top_players:
         print(
@@ -117,7 +117,7 @@ def player(
         player_name: str = typer.Argument(..., help="The name of the player to retrieve"),
 ):
     try:
-        player = get_player(player_name=player_name)
+        player = services.get_player(player_name=player_name)
         print(f"Player: {player.name}")
         print(f"Ranking: {player.ranking if player.ranking is not None else 'Unranked'}")
         print(f"Games won: {player.games_won}")
@@ -134,7 +134,7 @@ def add_word(
         word: str = typer.Argument(..., help="The word to add to the repository"),
 ):
     try:
-        add_word_to_repo(word=word)
+        services.add_word_to_repo(word=word)
         print(f'Word "{word}" added to the repository')
     except Exception as e:
             print(f"Error: {e}")
@@ -144,7 +144,7 @@ def delete_word(
         word: str = typer.Argument(..., help="The word to delete from the repository"),
 ):
     try:
-        delete_word_from_repo(word=word)
+        services.delete_word_from_repo(word=word)
         print(f'Word "{word}" deleted from the repository')
     except Exception as e:
         print(f"Error: {e}")
@@ -159,10 +159,10 @@ def serve_api(
         port: int = typer.Option(8000, help="Port to serve the API on"),
 ):
     uvicorn_serve(
-        app="main_api",
+        module_name="api_main",
         host=host,
         port=port,
-        service_name="API",
+        service_name="MAIN",
     )
 
 @serve_app.command("word")
@@ -171,7 +171,7 @@ def serve_word_api(
         port: int = typer.Option(8008, help="Port to serve the Word API on"),
 ):
     uvicorn_serve(
-        app="word_api",
+        module_name="api_words",
         host=host,
         port=port,
         service_name="WORD",

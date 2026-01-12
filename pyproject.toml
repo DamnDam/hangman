@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-hangman = "hangman:cli"
+hangman = "hangman.cli:app"
 
 [build-system]
 requires = ["uv_build>=0.9.22,<0.10.0"]

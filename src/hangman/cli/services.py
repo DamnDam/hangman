@@ -1,7 +1,7 @@
 from requests import HTTPError
 
 from ..models import PlayerNotFoundError
-from ..schemas import GamePublic, PlayerPublic, PlayerEnum
+from ..schemas import GamePublic, PlayerPublic, PlayerEnum, PlayerList
 from ..utils import request_factory
 
 MAIN_API_URL = "http://localhost:8000"
@@ -56,7 +56,6 @@ def get_player(
         player_name: str,
         request = dependencies.main_request,
 ) -> PlayerPublic:
-    print("Getting player:", player_name)
     try:
         return PlayerPublic.model_validate_json(request(
             method="GET",
@@ -75,7 +74,7 @@ def get_top_players(
         method="GET",
         endpoint=f"/top?n={n}",
     )
-    return [PlayerEnum.model_validate_json(player_data) for player_data in players_data]
+    return PlayerList.model_validate_json(players_data).root
 
 def add_word_to_repo(
         word: str,
@@ -95,12 +94,3 @@ def delete_word_from_repo(
         method="DELETE",
         endpoint=f"/words/{word}",
     )
-
-__all__ = [
-    "init_game",
-    "guess_letter",
-    "get_player",
-    "get_top_players",
-    "add_word_to_repo",
-    "delete_word_from_repo",
-]

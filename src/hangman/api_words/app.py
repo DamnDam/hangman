@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from ..models import WordAlreadyExists, WordNotFoundError
 from ..schemas import Word
 
-from .services import *
+from . import services
 
 app = FastAPI()
 
@@ -12,7 +12,7 @@ def get_word(
         word_length: int | None = None,
 ) -> Word:
     try:
-        return get_random_word(word_length=word_length)
+        return services.get_random_word(word_length=word_length)
     except WordNotFoundError:
         raise HTTPException(status_code=404, detail="No word found with the specified length")
     
@@ -21,7 +21,7 @@ def add_word(
         word: Word,
 ) -> None:
     try:
-        add_word_to_repo(word=word.word)
+        services.add_word_to_repo(word=word.word)
     except WordAlreadyExists:
         raise HTTPException(status_code=409, detail="Word already exists")
 
@@ -30,6 +30,6 @@ def delete_word(
         word: str,
 ) -> None:
     try:
-        delete_word_from_repo(word=word)
+        services.delete_word_from_repo(word=word)
     except WordNotFoundError:
         raise HTTPException(status_code=404, detail="Word not found")

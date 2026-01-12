@@ -1,9 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
 
 from ..models import GameNotFoundError, GameIsAlreadyOverError, PlayerNotFoundError
 from ..schemas import GamePublic, PlayerPublic, PlayerEnum, GameCreation, Letter
 
-from .services import *
+from . import services
 
 app = FastAPI()
 
@@ -11,7 +11,7 @@ app = FastAPI()
 def create_game(
         game_creation: GameCreation,
 ) -> GamePublic:
-    return init_game(
+    return services.init_game(
         player_name=game_creation.player_name,
         max_errors=game_creation.max_errors,
         word_length=game_creation.word_length,
@@ -23,7 +23,7 @@ def add_selected_letter(
         letter: Letter,
 ) -> GamePublic:
     try:
-        return guess_letter(game_id=game_id, letter=letter.letter)
+        return services.guess_letter(game_id=game_id, letter=letter.letter)
     except GameNotFoundError:
         raise HTTPException(status_code=404, detail="Game not found")
     except GameIsAlreadyOverError:
@@ -34,7 +34,7 @@ def get_player_endpoint(
         player_name: str,
 ) -> PlayerPublic:
     try:
-        return get_player(player_name=player_name)
+        return services.get_player(player_name=player_name)
 
     except PlayerNotFoundError:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -43,4 +43,4 @@ def get_player_endpoint(
 def get_top_players_endpoint(
         n: int = 10,
 ) -> list[PlayerEnum]:
-    return get_top_players(n=n)
+    return services.get_top_players(n=n)
